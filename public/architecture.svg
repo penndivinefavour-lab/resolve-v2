@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520">
+  <rect width="1200" height="520" fill="#05080f" />
+  <text x="600" y="36" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" fill="#22d3ee" text-anchor="middle">RESOLVE Architecture</text>
+
+  <g transform="translate(60,70)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">UI</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Command Center / Incident / Approval</text>
+  </g>
+
+  <g transform="translate(340,70)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Orchestrator</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">State machine + transitions</text>
+  </g>
+
+  <g transform="translate(620,70)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Specialized Agents</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Detection / Investigation / Decision / Action / Verification / Escalation</text>
+  </g>
+
+  <g transform="translate(900,70)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">PolicyEngine</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Deterministic authorization</text>
+  </g>
+
+  <g transform="translate(60,180)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">ToolGateway</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Controlled execution + adapters</text>
+  </g>
+
+  <g transform="translate(340,180)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">VerificationAgent</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Independent outcome check</text>
+  </g>
+
+  <g transform="translate(620,180)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Resolution</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Resolved / Escalated / Blocked</text>
+  </g>
+
+  <g transform="translate(900,180)">
+    <rect x="0" y="0" width="220" height="64" rx="12" fill="#0f172a" stroke="#1f2937" />
+    <text x="110" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Audit</text>
+    <text x="110" y="50" font-family="Inter, Arial, sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">Immutable event log</text>
+  </g>
+
+  <g transform="translate(60,290)">
+    <rect x="0" y="0" width="1060" height="180" rx="12" fill="#0b1120" stroke="#1f2937" />
+    <text x="530" y="28" font-family="Inter, Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Future adapter slots</text>
+    <text x="530" y="52" font-family="Inter, Arial, sans-serif" font-size="12" fill="#cbd5e1" text-anchor="middle">Freshworks / MCP · Enterprise ticketing · Monitoring · Payments · Voice</text>
+    <text x="530" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">These connectors are architecturally explicit, but not implemented in Stage 1.</text>
+    <text x="530" y="110" font-family="Inter, Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Current prototype uses deterministic simulated connectors so the demo remains reliable without external APIs.</text>
+    <text x="530" y="140" font-family="Inter, Arial, sans-serif" font-size="12" fill="#22d3ee" text-anchor="middle">Trust model: AI reasons → Policy authorizes → Tools execute → Verification proves → Humans intervene when required.</text>
+  </g>
+</svg>
