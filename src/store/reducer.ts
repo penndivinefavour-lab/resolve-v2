@@ -33,8 +33,17 @@ function advanceSequence(current: import('./types').IncidentStatus, targetScreen
   if (idx === -1) return null;
   if (idx >= SEQUENCE.length - 1) return null;
   const next = SEQUENCE[idx + 1];
-  if (targetScreen === 'verification' && next === 'VERIFYING') return next;
-  if (targetScreen === 'report' && next === 'RESOLVED') return next;
+  // Map target screen to the next status in sequence
+  const screenToNextStatus: Partial<Record<Screen, import('./types').IncidentStatus>> = {
+    investigation: 'INVESTIGATING',
+    decision: 'ACTION_PROPOSED',
+    execution: 'EXECUTING',
+    verification: 'VERIFYING',
+    report: 'RESOLVED',
+  };
+  const expectedNext = screenToNextStatus[targetScreen];
+  if (expectedNext && expectedNext === next) return next;
+  // Fallback: allow any incident-detail screen to advance
   if (['incident', 'investigation', 'decision', 'execution', 'verification', 'report'].includes(targetScreen)) {
     return next as import('./types').IncidentStatus;
   }

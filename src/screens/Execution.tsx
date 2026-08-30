@@ -15,7 +15,6 @@ export function Execution() {
   const execution = state.executions[0];
   const [isRunning, setIsRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const incidentId = incident?.id ?? null;
 
   const [activity, setActivity] = useState<AgentActivity[]>([
     { agent: 'DetectionAgent', action: 'Incident detected', timestamp: new Date().toISOString(), status: 'completed', detail: 'PAY-2048' },
@@ -27,6 +26,7 @@ export function Execution() {
 
   useEffect(() => {
     if (state.activeScreen !== 'execution' || isComplete) return;
+    if (!incident) return;
 
     setIsRunning(true);
 
@@ -39,13 +39,12 @@ export function Execution() {
         { agent: 'VerificationAgent', action: 'Verification started', timestamp: new Date().toISOString(), status: 'in_progress', detail: 'Checking recovery metrics' },
       ]);
 
-      if (incident) {
-        dispatch({ type: 'ADVANCE_INCIDENT', incidentId: incident.id, screen: 'verification' });
-      }
+      dispatch({ type: 'ADVANCE_INCIDENT', incidentId: incident.id, screen: 'verification' });
     }, 2000);
 
     return () => clearTimeout(timeout);
-  }, [state.activeScreen, isComplete, incidentId, dispatch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.activeScreen, isComplete, incident?.id, dispatch]);
 
   const handleBack = useCallback(() => {
     dispatch({ type: 'NAVIGATE', screen: 'decision' });

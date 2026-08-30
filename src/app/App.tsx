@@ -8,6 +8,7 @@ import { Execution } from '../screens/Execution';
 import { Verification } from '../screens/Verification';
 import { ApprovalCenter } from '../screens/ApprovalCenter';
 import { ResolutionReport } from '../screens/ResolutionReport';
+import { AuditTrail } from '../screens/AuditTrail';
 
 export default function App(): ReactNode {
   const { state } = useRESOLVE();
@@ -30,6 +31,8 @@ export default function App(): ReactNode {
       return <ApprovalCenter />;
     case 'report':
       return <ResolutionReport />;
+    case 'audit-trail':
+      return <AuditTrail />;
     default:
       return <Welcome />;
   }

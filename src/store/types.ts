@@ -21,7 +21,8 @@ export type Screen =
   | 'execution'
   | 'verification'
   | 'approval-center'
-  | 'report';
+  | 'report'
+  | 'audit-trail';
 
 export interface Incident {
   id: string;

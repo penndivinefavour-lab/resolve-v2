@@ -37,7 +37,7 @@ export function Investigation() {
 
   const handleContinue = useCallback(() => {
     if (incident) {
-      dispatch({ type: 'ADVANCE_INCIDENT', incidentId: incident.id, screen: 'decision' });
+      dispatch({ type: 'ADVANCE_INCIDENT', incidentId: incident.id, screen: 'investigation' });
       setActivity((prev) => [
         ...prev,
         { agent: 'InvestigationAgent', action: 'Root cause identified', timestamp: new Date().toISOString(), status: 'completed', detail: `${ROOT_CAUSE} · ${(ROOT_CAUSE_CONFIDENCE * 100).toFixed(0)}% confidence` },
@@ -105,7 +105,7 @@ export function Investigation() {
 
         {incident.status !== 'ROOT_CAUSE_IDENTIFIED' && (
           <div className="investigation__actions">
-            <Button variant="primary" size="lg" onClick={handleContinue} disabled={incident.status !== 'DETECTED'}>
+            <Button variant="primary" size="lg" onClick={handleContinue}>
               Continue to Decision →
             </Button>
             <Button variant="ghost" onClick={() => dispatch({ type: 'NAVIGATE', screen: 'command-center' })}>

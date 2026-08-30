@@ -85,12 +85,19 @@ export function CommandCenter() {
               </div>
             )}
           </div>
-          <Button variant="primary" onClick={handleLaunchDemo} disabled={isDemoReady}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Launch Demo
-          </Button>
+          <div className="command-center__top-bar-actions">
+            {isDemoReady && (
+              <Button variant="ghost" size="sm" onClick={() => dispatch({ type: 'NAVIGATE', screen: 'audit-trail' as Screen })}>
+                Audit Trail
+              </Button>
+            )}
+            <Button variant="primary" onClick={handleLaunchDemo} disabled={isDemoReady}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Launch Demo
+            </Button>
+          </div>
         </div>
 
         {isDemoReady ? (
