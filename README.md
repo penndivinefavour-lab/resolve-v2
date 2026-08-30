@@ -8,187 +8,86 @@ Detect. Decide. Act. Verify.
 
 ## Problem
 
-Enterprise teams have no shortage of dashboards and alerts. What they lack is a system that can actually **respond** when something goes wrong — investigating root causes, taking authorized action, verifying recovery, and knowing when to ask a human.
+Enterprise teams have dashboards and alerts, but lack a system that can actually **respond** — investigating root causes, taking authorized action, verifying recovery, and escalating when needed.
 
 ## Solution
 
-RESOLVE is an AI-native enterprise operations system that:
+RESOLVE is an AI-native enterprise operations system that coordinates specialized agents through a policy-controlled incident response workflow:
 
-1. **Detects** operational incidents
-2. **Investigates** root causes through evidence correlation
-3. **Decides** on remediation through structured reasoning
-4. **Checks authority** via a deterministic policy engine
-5. **Acts** through controlled tool boundaries
-6. **Verifies** outcomes independently
-7. **Escalates** to humans when autonomy ends
+1. **Detect** — Identifies anomalies and determines severity
+2. **Investigate** — Gathers evidence and correlates metrics
+3. **Decide** — Evaluates remediation options
+4. **Policy** — Deterministic authority checks (never bypassed by agents)
+5. **Act** — Executes through a controlled tool gateway
+6. **Verify** — Independently confirms recovery
+7. **Resolve** — Records full audit trail
 
-## Architecture
+### Demo Scenarios
+
+- **PAY-2048**: Payment gateway degradation — autonomous resolution end-to-end
+- **PAY-2051**: High-value refund requiring human approval (approve or reject)
+- **Blocked deletion**: Policy engine blocks critical production data deletion
+- **Verification failure**: Remediation executes but fails independent verification → escalation
+
+## Core Workflow
 
 ```
-USER
-  ↓
-UI
-  ↓
-RESOLVE ORCHESTRATOR
-  ↓
-SPECIALIZED AGENTS
-  ↓
-DETERMINISTIC POLICY ENGINE
-  ↓
-AUTONOMOUS / HUMAN APPROVAL / BLOCKED
-  ↓
-ACTION AGENT → TOOL GATEWAY
-  ↓
-VERIFICATION AGENT
-  ↓
-RESOLVED / ESCALATED
-  ↓
-AUDIT
+DETECT → INVESTIGATE → DECIDE → POLICY → ACT → VERIFY → RESOLVE
 ```
 
-### Component boundaries
+## Key Capabilities
 
-- **UI** — React screens for command center, investigation, decision, execution, verification, approval, and reporting.
-- **Orchestrator** — deterministic state machine enforcing allowed transitions and auditability.
-- **Specialized Agents** — logical roles for detection, investigation, decision, action, verification, and escalation.
-- **PolicyEngine** — deterministic authority checks; never bypassed by agent reasoning.
-- **ToolGateway** — controlled execution boundary with simulated enterprise connectors and explicit adapter slots for future Freshworks/MCP integrations.
-- **VerificationAgent** — independent outcome verification before resolution.
-- **Audit** — immutable event log for every significant transition.
+- Agentic incident investigation with multi-source evidence correlation
+- Root-cause analysis with confidence scoring
+- Deterministic policy engine for risk/authority evaluation
+- Human-in-the-loop approval for high-risk actions
+- Controlled tool gateway with permission requirements
+- Independent post-action verification
+- Immutable audit trail for every transition
+- Automatic escalation on failure or rejection
 
-## Agent Roles
-
-- **DetectionAgent** — Identifies anomalies, determines severity, creates incidents
-- **InvestigationAgent** — Gathers evidence, correlates metrics, examines changes, identifies root cause
-- **DecisionAgent** — Evaluates evidence, proposes remediation, estimates outcomes
-- **PolicyEngine** — Deterministic risk/authority evaluation (independent from LLM)
-- **ActionAgent** — Receives authorized actions, invokes tools through ToolGateway
-- **VerificationAgent** — Measures post-action state, compares against baseline, determines recovery
-- **EscalationAgent** — Creates human-readable escalation packages
-
-## Policy Engine
-
-Deterministic example policies:
-
-| Action | Risk | Authorization |
-|--------|------|---------------|
-| `rollback_gateway_config` | MEDIUM | AUTONOMOUS |
-| `restart_service` | MEDIUM | AUTONOMOUS |
-| `issue_refund` (low amount) | HUMAN_APPROVAL | HUMAN_APPROVAL |
-| `issue_refund` $48,700 | HIGH | HUMAN_APPROVAL |
-| `delete_production_data` | CRITICAL | BLOCKED |
-
-## Tool Gateway
-
-Controlled execution boundary. Every tool has:
-- Name, description, input schema
-- Permission requirement
-- Risk classification
-- Reversibility flag
-- Execution handler
-- Verification strategy
-
-Simulated tools: `get_payment_metrics`, `get_gateway_status`, `get_recent_changes`, `get_deployment_history`, `get_incident_history`, `rollback_gateway_config`, `create_incident`, `update_incident`, `request_human_approval`, `issue_refund`, `send_notification`
-
-## Verification Model
-
-Verification is not optional. RESOLVE only marks incidents RESOLVED after independent verification of:
-- payment failure rate recovery
-- gateway timeout normalization
-- transaction recovery confirmation
-- customer impact stabilization
-
-Failure path:
-- `VERIFYING` → `ESCALATED`
-- UI shows verification failure and recommended human intervention
-
-Blocked path:
-- `RISK_CHECK` → `BLOCKED`
-- PolicyEngine records blocked action in audit trail
-
-## Human-in-the-Loop
-
-High-risk actions require human approval. The Approval Center shows:
-- Risk level
-- Amount/impact
-- RESOLVE recommendation
-- Approve/Reject buttons
-
-All decisions are audited.
-
-## Verification
-
-RESOLVE does not mark incidents resolved based on tool success. It independently verifies:
-- Payment failure rate recovery
-- Gateway timeout normalization
-- Transaction recovery confirmation
-- Customer impact stabilization
-
-## Demo Instructions
-
-```bash
-cd C:/Users/USER/Desktop/RESOLVE
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`
-
-## How to Use RESOLVE
-
-1. Open the localhost URL shown by `npm run dev`.
-2. On the welcome screen, click **Launch Demo**.
-3. Use the **Command Center** to open incidents.
-4. Walk through **Investigation → Decision → Execution → Verification → Resolution Report**.
-5. Open **Approval Center** to test high-risk human approval for PAY-2051.
-
-For full step-by-step guidance, see [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
-
-### Primary Demo Flow (90 seconds)
-
-1. **Command Center** — See active PAY-2048 incident (38.4% failure rate)
-2. **Open Incident** — View pipeline: DETECTED → INVESTIGATING → ROOT CAUSE → DECISION → RISK CHECK → ACTION → VERIFY
-3. **Investigation** — Six evidence cards, Gateway A timeout config identified, 94% confidence
-4. **Decision** — Rollback recommended, MEDIUM risk, AUTONOMOUS authorization
-5. **Execute** — Live execution timeline, rollback successful
-6. **Verification** — Metrics: 38.4% → 17.2% → 4.7% → 2.3%, all checks pass
-7. **Resolution Report** — 36.1pp reduction, 5 min resolution, 0 human interventions
-
-### Human Approval Flow
-
-1. From Command Center, open **Approval Center**
-2. See PAY-2051: $48,700 refund, HIGH RISK, HUMAN APPROVAL REQUIRED
-3. Approve or Reject
-4. Decision recorded in audit trail
-
-## Technology Stack
+## Tech Stack
 
 - React 19 + TypeScript
 - Vite 6
 - Vitest
-- Deterministic state machine (no external AI dependency for demo)
+- CSS custom properties (design tokens)
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` and click **Launch Demo**.
+
+## Demo Walkthrough
+
+1. Click **Launch Demo**
+2. View Command Center with PAY-2048 incident (38.4% failure rate)
+3. Open incident → investigate evidence → identify root cause (Gateway A timeout, 94% confidence)
+4. Review autonomous rollback recommendation → execute remediation
+5. Watch live agent activity and verification metrics recover to baseline (2.3%)
+6. View resolution report
+7. Open Approval Center to see PAY-2051 ($48,700 refund) requiring human approval
+
+## Architecture
+
+- `src/store/` — State management via useReducer with deterministic state machine
+- `src/engine/` — Agent logic (detection, investigation, decision, policy, execution, verification)
+- `src/screens/` — React screens for each workflow stage
+- `src/components/` — Reusable UI components
+- `src/data/` — Demo data and scenarios
+- `src/styles/` — Design tokens, layout, and animation styles
 
 ## Known Limitations
 
 - Stage-1 prototype with simulated enterprise connectors
-- No real external integrations
+- No real external API integrations
 - Demo data is deterministic
-- Voice interface not implemented in this stage
+- Voice interface not implemented
 
-## Future Integrations
+## GitHub
 
-- Freshworks Agent Studio / MCP tools
-- Enterprise ticketing systems
-- Real monitoring/payment systems
-- ElevenLabs voice interface
-- WebSocket live metrics
-
-## Hackathon Context
-
-Built for The Great Agent Hackathon — Stage 1 Prototype.
-
-The differentiator is not "AI analyzes incidents." It is **AI-driven operational reasoning combined with deterministic authority, controlled execution, independent verification, and human escalation**.
-
----
-
-**RESOLVE** — Detect. Decide. Act. Verify.
+https://github.com/penndivinefavour-lab/resolve-v2
