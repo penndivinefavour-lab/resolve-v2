@@ -26,20 +26,34 @@ export function WorkflowIndicator({ currentStatus, failed = false, blocked = fal
 
         let status: WorkflowStepStatus = 'upcoming';
 
-        if (failed && currentStatusKey === 'verifying') {
+        // Human approval path: show up to Decision step as completed, rest upcoming
+        if (currentStatus === 'AWAITING_APPROVAL') {
+          status = idx <= 3 ? 'completed' : 'upcoming';
+          if (idx === 3) status = 'current';
+        }
+        // Escalated path
+        else if (failed && currentStatusKey === 'verifying') {
           status = 'failed';
-        } else if (blocked && currentStatusKey === 'risk-check') {
+        }
+        // Blocked path
+        else if (blocked && currentStatusKey === 'risk-check') {
           status = 'blocked';
-        } else if (isTerminal && currentStatus === 'RESOLVED') {
+        }
+        // Terminal states
+        else if (isTerminal && currentStatus === 'RESOLVED') {
           status = idx <= 7 ? 'completed' : 'upcoming';
-        } else if (isTerminal && (currentStatus === 'ESCALATED' || currentStatus === 'BLOCKED')) {
+        }
+        else if (isTerminal && (currentStatus === 'ESCALATED' || currentStatus === 'BLOCKED')) {
           const terminalStepIndex = currentStatus === 'ESCALATED' ? 6 : 4;
           status = idx <= terminalStepIndex ? 'completed' : 'upcoming';
           if (idx === terminalStepIndex + 1 && currentStatus === 'ESCALATED') status = 'failed';
           if (idx === terminalStepIndex && currentStatus === 'BLOCKED') status = 'blocked';
-        } else if (currentStatusKey === key) {
+        }
+        // Normal progression
+        else if (currentStatusKey === key) {
           status = 'current';
-        } else if (workflowSteps.findIndex((s: WorkflowStep) => s.key === currentStatusKey) !== -1) {
+        }
+        else if (workflowSteps.findIndex((s: WorkflowStep) => s.key === currentStatusKey) !== -1) {
           const currentIdx = workflowSteps.findIndex((s: WorkflowStep) => s.key === currentStatusKey);
           status = idx <= currentIdx ? 'completed' : 'upcoming';
         }

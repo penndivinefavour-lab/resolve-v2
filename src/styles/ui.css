@@ -471,6 +471,14 @@
   color: var(--text-muted);
 }
 
+.command-center__sim-badge {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  opacity: 0.6;
+}
+
 .command-center__status-dot {
   width: 8px;
   height: 8px;

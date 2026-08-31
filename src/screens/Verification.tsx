@@ -40,8 +40,10 @@ export function Verification() {
   }, [dispatch]);
 
   const handleContinue = useCallback(() => {
-    dispatch({ type: 'NAVIGATE', screen: 'report' });
-  }, [dispatch]);
+    if (incident) {
+      dispatch({ type: 'ADVANCE_INCIDENT', incidentId: incident.id, screen: 'report' });
+    }
+  }, [dispatch, incident]);
 
   const handleFailVerification = useCallback(() => {
     if (incident) {

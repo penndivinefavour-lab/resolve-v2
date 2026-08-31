@@ -82,6 +82,7 @@ export function CommandCenter() {
               <div className="command-center__status-pill">
                 <span className="command-center__status-dot command-center__status-dot--active" />
                 <span className="command-center__status-text">{primaryIncident?.status ?? '—'}</span>
+                <span className="command-center__sim-badge">SIMULATION</span>
               </div>
             )}
           </div>

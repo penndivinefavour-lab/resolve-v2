@@ -39,7 +39,7 @@ export function ApprovalCenter() {
 
   const handleBack = useCallback(() => {
     dispatch({ type: 'NAVIGATE', screen: 'command-center' });
-  }, [dispatch, incident?.id]);
+  }, [dispatch]);
 
   const handleApprove = useCallback(() => {
     if (incident) {
