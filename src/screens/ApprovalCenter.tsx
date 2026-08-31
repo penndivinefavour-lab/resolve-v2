@@ -1,20 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRESOLVE } from '../store/RESOLVEContext';
-import { MainLayout } from '../components/layout/MainLayout';
-import { AgentActivityList } from '../components/activity/AgentActivityList';
-import { PageHeader } from '../components/layout/MainLayout';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import { MetricCard } from '../components/incidents/MetricCard';
-import { ApprovalActions } from '../components/incidents/ApprovalActions';
-import { ResolutionReportContent } from '../components/incidents/ResolutionReportContent';
+import { useToast } from '../components/ui/Toast';
 import type { AgentActivity } from '../store/types';
 
 export function ApprovalCenter() {
   const { state, dispatch } = useRESOLVE();
+  const { addToast } = useToast();
   const incident = state.incidents.find((i) => i.id === state.currentIncidentId) ?? state.incidents.find((i) => i.id === 'PAY-2051');
 
-  const [activity, setActivity] = useState<AgentActivity[]>([
+  const [_activity, setActivity] = useState<AgentActivity[]>([
     { agent: 'DetectionAgent', action: 'Incident detected', timestamp: new Date().toISOString(), status: 'completed', detail: 'PAY-2051 · High-Value Refund Batch' },
     { agent: 'DecisionAgent', action: 'Refund analysis complete', timestamp: new Date().toISOString(), status: 'completed', detail: '$48,700 · 980 affected transactions · 91% confidence' },
     { agent: 'PolicyEngine', action: 'Policy evaluated', timestamp: new Date().toISOString(), status: 'completed', detail: 'HUMAN_APPROVAL required · exceeds autonomous threshold' },
@@ -25,51 +21,39 @@ export function ApprovalCenter() {
     if (incident?.humanDecision === 'approved') {
       setActivity((prev) => [
         ...prev.slice(0, -1),
-        { agent: 'Human', action: 'Approved refund', timestamp: new Date().toISOString(), status: 'completed', detail: 'Decision: Approve · $48,700 refund authorized' },
-        { agent: 'ActionAgent', action: 'Refund workflow initiated', timestamp: new Date().toISOString(), status: 'in_progress', detail: 'Processing 980 affected transactions' },
+        { agent: 'Human', action: 'Approved refund', timestamp: new Date().toISOString(), status: 'completed' as const, detail: 'Decision: Approve · $48,700 refund authorized' },
+        { agent: 'ActionAgent', action: 'Refund workflow initiated', timestamp: new Date().toISOString(), status: 'in_progress' as const, detail: 'Processing 980 affected transactions' },
       ]);
+      addToast({ type: 'success', title: 'Action Approved', message: 'PAY-2051 refund authorized and executing' });
     } else if (incident?.humanDecision === 'rejected') {
       setActivity((prev) => [
         ...prev.slice(0, -1),
-        { agent: 'Human', action: 'Rejected refund', timestamp: new Date().toISOString(), status: 'completed', detail: 'Decision: Reject · action blocked' },
-        { agent: 'EscalationAgent', action: 'Incident escalated', timestamp: new Date().toISOString(), status: 'in_progress', detail: 'Human review required' },
+        { agent: 'Human', action: 'Rejected refund', timestamp: new Date().toISOString(), status: 'completed' as const, detail: 'Decision: Reject · action blocked' },
+        { agent: 'EscalationAgent', action: 'Incident escalated', timestamp: new Date().toISOString(), status: 'in_progress' as const, detail: 'Human review required' },
       ]);
+      addToast({ type: 'error', title: 'Action Rejected', message: 'PAY-2051 escalated for human review' });
     }
-  }, [incident?.humanDecision]);
+  }, [incident?.humanDecision, addToast]);
 
-  const handleBack = useCallback(() => {
-    dispatch({ type: 'NAVIGATE', screen: 'command-center' });
-  }, [dispatch]);
-
+  const handleBack = useCallback(() => dispatch({ type: 'NAVIGATE', screen: 'command-center' }), [dispatch]);
   const handleApprove = useCallback(() => {
-    if (incident) {
-      dispatch({ type: 'SET_APPROVAL_DECISION', incidentId: incident.id, decision: 'approved' });
-    }
+    if (incident) dispatch({ type: 'SET_APPROVAL_DECISION', incidentId: incident.id, decision: 'approved' });
   }, [dispatch, incident]);
-
   const handleReject = useCallback(() => {
-    if (incident) {
-      dispatch({ type: 'SET_APPROVAL_DECISION', incidentId: incident.id, decision: 'rejected' });
-    }
+    if (incident) dispatch({ type: 'SET_APPROVAL_DECISION', incidentId: incident.id, decision: 'rejected' });
   }, [dispatch, incident]);
 
   if (!incident) {
     return (
-      <MainLayout onBack={handleBack} backLabel="Command Center">
-        <div className="approval-center--empty">
-          <div className="approval-center--empty-inner animate-fade-in-up">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-              <circle cx="24" cy="24" r="18" stroke="currentColor" strokeWidth="2" />
-              <path d="M24 14V24L30 30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <h2>No approval actions pending</h2>
-            <p>Launch the demo to see approval workflows.</p>
-            <Button variant="secondary" onClick={() => dispatch({ type: 'START_DEMO' })}>
-              Launch Demo
-            </Button>
-          </div>
-        </div>
-      </MainLayout>
+      <div className="empty-state">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ color: 'var(--text-dim)' }}>
+          <circle cx="24" cy="24" r="18" stroke="currentColor" strokeWidth="2" />
+          <path d="M24 14V24L30 30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <h3>No approval actions pending</h3>
+        <p>Launch the demo to see approval workflows.</p>
+        <Button variant="secondary" onClick={() => dispatch({ type: 'START_DEMO' })}>Launch Demo</Button>
+      </div>
     );
   }
 
@@ -78,93 +62,73 @@ export function ApprovalCenter() {
   const isRejected = incident.humanDecision === 'rejected';
 
   return (
-    <MainLayout
-      title="Approval Center"
-      subtitle="1 action requires your decision"
-      showWorkflow={true}
-      incident={incident}
-      onBack={handleBack}
-      backLabel="Back"
-    >
-      <PageHeader
-        title="Approval Center"
-        subtitle="Human-in-the-loop authorization for high-risk actions"
-      />
+    <div className="approval-view animate-fade-in">
+      <div className="investigation-header">
+        <div>
+          <h2 className="investigation-title">Approval Center</h2>
+          <p className="investigation-subtitle">Human-in-the-loop authorization for high-risk actions</p>
+        </div>
+        <Badge variant="warning">1 ACTION PENDING</Badge>
+      </div>
 
-      <div className="approval-center animate-fade-in">
-        <div className="approval-center__card">
-          <div className="approval-center__header">
-            <div className="approval-center__badges">
+      <div className="approval-hero">
+        <div className="approval-hero__header">
+          <div>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
               <Badge variant="danger">HIGH RISK</Badge>
               <Badge variant="warning">HUMAN APPROVAL REQUIRED</Badge>
             </div>
-            <h2 className="approval-center__title">{incident.title}</h2>
-            <span className="approval-center__id mono">{incident.id}</span>
-          </div>
-
-          <div className="approval-center__metrics">
-            <MetricCard label="Refund amount" value={`$${incident.metrics.disputedAmount ? incident.metrics.disputedAmount.toLocaleString() : '48700'}`} accent="warning" />
-            <MetricCard label="Affected transactions" value={incident.affectedCount.toLocaleString()} />
-          </div>
-
-          <div className="approval-center__reason">
-            <span className="approval-center__reason-label">RESOLVE recommendation</span>
-            <p className="approval-center__reason-text">
-              Refund affected transactions. This action exceeds RESOLVE's autonomous transaction authority.
-              Human approval is required before execution.
-            </p>
-            <div className="approval-center__reason-confidence">
-              <span className="approval-center__reason-confidence-label">Confidence</span>
-              <span className="approval-center__reason-confidence-value" style={{ color: 'var(--success)' }}>91%</span>
-            </div>
-          </div>
-
-          {isPending && (
-            <ApprovalActions
-              onApprove={handleApprove}
-              onReject={handleReject}
-            />
-          )}
-
-          {isApproved && (
-            <ResolutionReportContent
-              incident={incident}
-              verification={state.verifications[0] ?? null}
-              audit={state.audit}
-            />
-          )}
-
-          {isRejected && (
-            <div className="approval-center__rejected animate-fade-in-up">
-              <div className="result-banner result-banner--error">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                  <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-                <div className="result-banner__body">
-                  <span className="result-banner__title">Action Rejected</span>
-                  <span className="result-banner__message">The refund has been blocked. Incident escalated for human review.</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="approval-center__activity">
-            <AgentActivityList activities={activity} />
+            <h3 className="approval-hero__title">{incident.title}</h3>
+            <span className="approval-hero__id mono">{incident.id}</span>
           </div>
         </div>
 
-        <div className="approval-center__footer animate-fade-in-up">
-          <Button variant="ghost" onClick={() => dispatch({ type: 'NAVIGATE', screen: 'command-center' })}>
-            Back to Command Center
-          </Button>
-          {isPending && (
-            <Button variant="ghost" onClick={() => dispatch({ type: 'RESET' })}>
-              Reset Demo
-            </Button>
-          )}
+        <div className="approval-metrics">
+          <div className="approval-metric">
+            <span className="approval-metric__label">Refund Amount</span>
+            <span className="approval-metric__value">${incident.metrics.disputedAmount?.toLocaleString() ?? '48,700'}</span>
+          </div>
+          <div className="approval-metric">
+            <span className="approval-metric__label">Affected Transactions</span>
+            <span className="approval-metric__value">{incident.affectedCount.toLocaleString()}</span>
+          </div>
         </div>
+
+        <div className="approval-reason">
+          <span className="approval-reason__label">Why human approval is required</span>
+          <p className="approval-reason__text">
+            This refund action exceeds RESOLVE's autonomous transaction authority of $10,000.
+            The decision agent has determined that human authorization is required before execution.
+          </p>
+        </div>
+
+        {isPending && (
+          <div className="approval-actions">
+            <Button variant="danger" onClick={handleReject}>Reject & Escalate</Button>
+            <Button variant="success" onClick={handleApprove}>Approve Action</Button>
+          </div>
+        )}
+
+        {isApproved && (
+          <div className="completed-box">
+            <span className="completed-box__title">✓ ACTION APPROVED</span>
+            <span className="completed-box__subtitle">PAY-2051 refund authorized and executing. Processing 980 affected transactions.</span>
+          </div>
+        )}
+
+        {isRejected && (
+          <div className="escalation-card">
+            <span className="escalation-card__title">ACTION REJECTED</span>
+            <Badge variant="danger">ESCALATED</Badge>
+            <p className="escalation-card__message">The refund has been blocked. Incident escalated for human review.</p>
+          </div>
+        )}
       </div>
-    </MainLayout>
+
+      <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
+        <Button variant="ghost" onClick={handleBack}>Back to Command Center</Button>
+        {isPending && <Button variant="ghost" onClick={() => dispatch({ type: 'RESET' })}>Reset Demo</Button>}
+      </div>
+    </div>
   );
 }

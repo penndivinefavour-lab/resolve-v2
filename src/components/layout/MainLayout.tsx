@@ -32,66 +32,33 @@ export function MainLayout({
   return (
     <div className="main-layout">
       {!hideHeader && (
-        <div className="app-header">
-          <div className="app-header__brand">
-            <div className="app-header__logo">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="2" />
-                <path d="M12 6v6l4 2" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+        <div className="page-header-bar">
+          {onBack && (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={onBack}>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </div>
-            <span className="app-header__wordmark">RESOLVE</span>
-            <span className="app-header__tag">AI Operations</span>
-          </div>
-          {(onBack || title) && (
-            <div className="app-header__nav">
-              {onBack && (
-                <button type="button" className="btn btn-ghost btn-sm" onClick={onBack}>
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  {backLabel}
-                </button>
-              )}
-              {title && <span className="app-header__page-title">{title}</span>}
-            </div>
+              {backLabel}
+            </button>
           )}
+          {title && <h1 className="page-header-bar__title">{title}</h1>}
+          {subtitle && <p className="page-header-bar__subtitle">{subtitle}</p>}
         </div>
       )}
 
-      {(onBack || title) && !hideHeader && (
-        <div className="main-layout__topbar">
-          <div className="main-layout__topbar-left">
-            {onBack && (
-              <button type="button" className="btn btn-ghost btn-sm" onClick={onBack}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {backLabel}
-              </button>
-            )}
-            {onBack && <span className="main-layout__divider" />}
-          </div>
-          <div className="main-layout__topbar-right">
-            {title && <h1 className="main-layout__title">{title}</h1>}
-            {subtitle && <p className="main-layout__subtitle">{subtitle}</p>}
-          </div>
+      {showWorkflow && incident && (
+        <div className="workflow-rail-container">
+          <WorkflowIndicator currentStatus={incident.status} />
         </div>
       )}
 
-      <div className="main-layout__body">
-        {showWorkflow && incident && (
-          <div className="main-layout__workflow">
-            <WorkflowIndicator currentStatus={incident.status} />
-          </div>
-        )}
-
-        <div className="main-layout__content">
+      <div className="content-with-sidebar">
+        <div className="main-content">
           {children}
         </div>
 
         {showActivity && (
-          <div className="main-layout__activity animate-slide-in-right">
+          <div className="sidebar-panel animate-slide-in-right">
             <AgentActivityPanel activities={activities} compact />
           </div>
         )}
@@ -112,11 +79,9 @@ export function PageHeader({ title, subtitle, badge, badgeColor, actions }: Page
   return (
     <div className="page-header">
       <div className="page-header__left">
-        <h1 className="page-header__title">{title}</h1>
+        <h2 className="page-header__title">{title}</h2>
         {subtitle && <p className="page-header__subtitle">{subtitle}</p>}
-        {badge && (
-          <span className={`badge badge--${badgeColor ?? 'accent'}`}>{badge}</span>
-        )}
+        {badge && <span className={`badge badge--${badgeColor ?? 'accent'}`}>{badge}</span>}
       </div>
       {actions && <div className="page-header__actions">{actions}</div>}
     </div>
@@ -141,13 +106,7 @@ export function SectionHeader({ label, count, action }: SectionHeaderProps) {
   );
 }
 
-interface BackButtonProps {
-  onClick: () => void;
-  label?: string;
-  icon?: boolean;
-}
-
-export function BackButton({ onClick, label = 'Back', icon = true }: BackButtonProps) {
+export function BackButton({ onClick, label = 'Back', icon = true }: { onClick: () => void; label?: string; icon?: boolean }) {
   return (
     <button type="button" className="btn btn-ghost btn-sm" onClick={onClick}>
       {icon && (
