@@ -8,10 +8,12 @@ import { BarChart } from '../components/incidents/BarChart';
 import { ChecksList } from '../components/incidents/ChecksList';
 import { EscalationCard } from '../components/incidents/EscalationCard';
 import { ResolutionCard } from '../components/incidents/ResolutionCard';
+import { useToast } from '../components/ui/Toast';
 import type { AgentActivity } from '../store/types';
 
 export function Verification() {
   const { state, dispatch } = useRESOLVE();
+  const { addToast } = useToast();
   const incident = state.incidents.find((i) => i.id === state.currentIncidentId) ?? state.incidents.find((i) => i.id === 'PAY-2048');
   const verification = state.verifications[0];
 
@@ -30,8 +32,9 @@ export function Verification() {
         ...prev.slice(0, -1),
         { agent: 'VerificationAgent', action: 'Verification passed', timestamp: new Date().toISOString(), status: 'completed', detail: `Payment failure rate: ${verification.before}% → ${verification.after}% (baseline: ${verification.baseline}%)` },
       ]);
+      addToast({ type: 'success', title: 'Recovery Verified', message: `Failure rate reduced from ${verification.before}% to ${verification.after}%` });
     }
-  }, [verification]);
+  }, [verification, addToast]);
 
   const failed = !verification?.verified && incident?.status === 'ESCALATED';
 

@@ -1,16 +1,24 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useRESOLVE } from '../store/RESOLVEContext';
 import { MainLayout } from '../components/layout/MainLayout';
 import { AgentActivityList } from '../components/activity/AgentActivityList';
 import { PageHeader } from '../components/layout/MainLayout';
 import { Button } from '../components/ui/Button';
 import { ResolutionReportContent } from '../components/incidents/ResolutionReportContent';
+import { useToast } from '../components/ui/Toast';
 import type { AgentActivity } from '../store/types';
 
 export function ResolutionReport() {
   const { state, dispatch } = useRESOLVE();
+  const { addToast } = useToast();
   const incident = state.incidents.find((i) => i.id === 'PAY-2048');
   const verification = state.verifications[0];
+
+  useEffect(() => {
+    if (incident?.status === 'RESOLVED' && verification?.verified) {
+      addToast({ type: 'success', title: 'Incident Resolved', message: `PAY-2048 successfully recovered — ${verification.recovery.toFixed(1)}pp reduction` });
+    }
+  }, [incident?.status, verification, addToast]);
 
   const handleBack = useCallback(() => {
     if (incident?.status === 'RESOLVED') {

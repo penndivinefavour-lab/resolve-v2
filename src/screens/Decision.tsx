@@ -6,10 +6,12 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { PolicyBadge } from '../components/ui/PolicyBadge';
 import { RecommendationBox } from '../components/incidents/RecommendationBox';
+import { useToast } from '../components/ui/Toast';
 import type { AgentActivity } from '../store/types';
 
 export function Decision() {
   const { state, dispatch } = useRESOLVE();
+  const { addToast } = useToast();
   const incident = state.incidents.find((i) => i.id === state.currentIncidentId) ?? state.incidents.find((i) => i.id === 'PAY-2048');
   const proposal = state.proposals[0];
   const policyDecision = state.policyDecisions[0];
@@ -29,8 +31,13 @@ export function Decision() {
         { agent: 'PolicyEngine', action: 'Policy evaluated', timestamp: new Date().toISOString(), status: 'completed', detail: policyDecision?.authorization ?? 'AUTONOMOUS' },
         { agent: 'ActionAgent', action: 'Preparing execution', timestamp: new Date().toISOString(), status: 'in_progress', detail: 'Awaiting authorization' },
       ]);
+      addToast({
+        type: policyDecision?.authorization === 'AUTONOMOUS' ? 'success' : 'warning',
+        title: policyDecision?.authorization === 'AUTONOMOUS' ? 'Autonomous Execution Authorized' : 'Human Approval Required',
+        message: `Policy ${policyDecision?.authorization} — ${proposal?.action}`,
+      });
     }
-  }, [incident, dispatch, proposal, policyDecision]);
+  }, [incident, dispatch, proposal, policyDecision, addToast]);
 
   const handleBack = useCallback(() => {
     dispatch({ type: 'NAVIGATE', screen: 'investigation' });
