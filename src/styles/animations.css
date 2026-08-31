@@ -184,3 +184,10 @@
 .stagger-children > *:nth-child(6) { animation-delay: 300ms; }
 .stagger-children > *:nth-child(7) { animation-delay: 360ms; }
 .stagger-children > *:nth-child(8) { animation-delay: 420ms; }
+
+.stagger-1 { animation-delay: 0ms !important; }
+.stagger-2 { animation-delay: 60ms !important; }
+.stagger-3 { animation-delay: 120ms !important; }
+.stagger-4 { animation-delay: 180ms !important; }
+.stagger-5 { animation-delay: 240ms !important; }
+.stagger-6 { animation-delay: 300ms !important; }

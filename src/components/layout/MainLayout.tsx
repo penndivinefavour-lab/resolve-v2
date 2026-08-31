@@ -14,6 +14,7 @@ interface MainLayoutProps {
   showWorkflow?: boolean;
   onBack?: () => void;
   backLabel?: string;
+  hideHeader?: boolean;
 }
 
 export function MainLayout({
@@ -26,10 +27,39 @@ export function MainLayout({
   showWorkflow = false,
   onBack,
   backLabel = 'Back',
+  hideHeader = false,
 }: MainLayoutProps) {
   return (
     <div className="main-layout">
-      {(onBack || title) && (
+      {!hideHeader && (
+        <div className="app-header">
+          <div className="app-header__brand">
+            <div className="app-header__logo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="2" />
+                <path d="M12 6v6l4 2" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <span className="app-header__wordmark">RESOLVE</span>
+            <span className="app-header__tag">AI Operations</span>
+          </div>
+          {(onBack || title) && (
+            <div className="app-header__nav">
+              {onBack && (
+                <button type="button" className="btn btn-ghost btn-sm" onClick={onBack}>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {backLabel}
+                </button>
+              )}
+              {title && <span className="app-header__page-title">{title}</span>}
+            </div>
+          )}
+        </div>
+      )}
+
+      {(onBack || title) && !hideHeader && (
         <div className="main-layout__topbar">
           <div className="main-layout__topbar-left">
             {onBack && (
